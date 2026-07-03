@@ -1,0 +1,37 @@
+# Theme dictionaries for narrative frequency tracking.
+#
+# Each theme has:
+#   label:        human-readable name
+#   gdelt_query:  query string passed to the GDELT DOC 2.0 API
+#                 (GDELT matches full article text; quoted phrases required
+#                 for multi-word terms; single words unquoted)
+#   keywords:     lowercase substrings used for local headline matching
+#                 (Google News RSS now, Naver News API later)
+#
+# Design decision (by the author): themes are defined as explicit keyword
+# dictionaries rather than learned topics, so that every count is auditable
+# -- you can always answer "why did this article match".
+
+themes:
+  smr_nuclear:
+    label: "SMR / advanced nuclear (Oklo)"
+    gdelt_query: '(Oklo OR "small modular reactor") sourcelang:eng'
+    keywords:
+      - oklo
+      - small modular reactor
+      - " smr"          # leading space avoids matching inside other words
+      - advanced nuclear
+      - microreactor
+      - 소형모듈원전
+      - 소형 모듈 원전
+
+  ai_datacenter_power:
+    label: "AI data center power demand x nuclear"
+    gdelt_query: '"data center" (nuclear OR reactor) sourcelang:eng'
+    keywords:
+      - data center power
+      - datacenter power
+      - ai power demand
+      - nuclear data center
+      - 데이터센터 전력
+      - ai 전력
