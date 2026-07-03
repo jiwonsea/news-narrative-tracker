@@ -1,5 +1,7 @@
 # news-narrative-tracker
 
+[![CI](https://github.com/jiwonsea/news-narrative-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/jiwonsea/news-narrative-tracker/actions/workflows/ci.yml)
+
 Quantify how loudly the market is talking about a theme — by counting news
 articles, not by feel.
 
@@ -78,7 +80,8 @@ insufficient (v2).
 pip install -r requirements.txt
 python scripts/run_demo.py         # offline, reproducible from data/ snapshots
 python scripts/run_demo.py --fetch # refresh from the GDELT API (rate-limited)
-pytest                             # 13 tests: parsing, matching, metrics
+python scripts/collect_forward.py  # live: append today's counts (run on a schedule)
+pytest                             # 16 tests: parsing, matching, metrics, forward store
 ```
 
 ## Repo layout
@@ -92,8 +95,10 @@ src/narrative_tracker/
   themes.py               dictionary loading + headline matching
   metrics.py              share, z-score, change rate, momentum
   pipeline.py             collect -> score
+  forward.py              live collection store (dedupe + daily counts)
   report.py               HTML report builder
 scripts/run_demo.py       the Oklo/SMR retrospective demo
+scripts/collect_forward.py  daily forward collector (Google News RSS)
 data/                     cached snapshots (see data/README.md for provenance)
 reports/                  generated chart + HTML report
 tests/                    pytest suite
@@ -131,13 +136,16 @@ This split is stated because it is true, and because the design decisions
 - Close-price series cannot show intraday extremes (the $193.84 high is
   annotated from a separate verified source).
 
-## Roadmap (v2+)
+## Roadmap
 
-- Forward daily collection (Google News RSS + Naver News API) with a
-  scheduled job — turning the retrospective tool into a live monitor.
-- Multiple themes tracked in parallel with a signal-light dashboard
-  (pattern shared with my macro-risk-monitor project).
-- Only then: sentiment/embedding enrichment, if frequency alone proves
+- **v0.2 (done):** forward daily collection via Google News RSS
+  (`scripts/collect_forward.py`, deduped local store) + CI (pytest on
+  Python 3.10/3.12, plus a full offline demo run).
+- **v0.3:** Naver News API collector (Korean market), scheduled runs, and a
+  multi-theme signal-light dashboard (pattern shared with my
+  macro-risk-monitor project). Note: RSS/API stores cannot backfill and are
+  not directly comparable to GDELT shares without normalization.
+- **Later:** sentiment/embedding enrichment, only if frequency alone proves
   insufficient.
 
 ---
