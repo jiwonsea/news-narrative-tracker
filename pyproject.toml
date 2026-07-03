@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "news-narrative-tracker"
+version = "0.1.0"
+description = "Quantify market narrative intensity from news article frequency"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=1.5",
+    "matplotlib>=3.6",
+    "requests>=2.28",
+    "PyYAML>=6.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
