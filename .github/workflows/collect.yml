@@ -1,0 +1,48 @@
+name: Daily forward collection
+
+on:
+  schedule:
+    # 21:20 UTC daily = 06:20 KST next morning
+    - cron: "20 21 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: collect-forward
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Collect (Google News RSS)
+        run: python scripts/collect_forward.py --source google
+      - name: Collect (Naver News API, skipped unless secrets configured)
+        env:
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        run: |
+          if [ -n "$NAVER_CLIENT_ID" ] && [ -n "$NAVER_CLIENT_SECRET" ]; then
+            python scripts/collect_forward.py --source naver
+          else
+            echo "NAVER_CLIENT_ID/_SECRET not configured; skipping Naver collection."
+          fi
+      - name: Commit updated forward store
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898084+github-actions[bot]@users.noreply.github.com"
+          git add data/forward/
+          if git diff --cached --quiet; then
+            echo "No new data; nothing to commit."
+          else
+            git commit -m "chore(data): daily forward collection $(date -u +%F)"
+            git push
+          fi

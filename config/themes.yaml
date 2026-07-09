@@ -35,3 +35,26 @@ themes:
       - nuclear data center
       - 데이터센터 전력
       - ai 전력
+
+  hbm_memory:
+    label: "HBM / AI memory (semiconductor)"
+    gdelt_query: '("high bandwidth memory" OR HBM3 OR HBM4) sourcelang:eng'
+    keywords:
+      - high bandwidth memory
+      - " hbm"
+      - hbm3
+      - hbm4
+      - ai memory chip
+      - 고대역폭메모리
+      - 고대역폭 메모리
+
+  defense_exports:
+    label: "Korean defense exports (K-defense)"
+    gdelt_query: '("defense export" OR "arms export") ("South Korea" OR Korean) sourcelang:eng'
+    keywords:
+      - k-defense
+      - korean defense export
+      - korea arms export
+      - 방산 수출
+      - 방위산업
+      - k방산

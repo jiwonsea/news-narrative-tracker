@@ -1,0 +1,43 @@
+{
+  "lastBuildDate": "Fri, 03 Jul 2026 09:00:00 +0900",
+  "total": 5,
+  "start": 1,
+  "display": 5,
+  "items": [
+    {
+      "title": "<b>소형모듈원전</b> 수출 계약 체결&hellip; &quot;역대 최대&quot;",
+      "originallink": "https://example-press.co.kr/news/1001",
+      "link": "https://n.news.naver.com/mnews/article/001/0001",
+      "description": "desc",
+      "pubDate": "Fri, 03 Jul 2026 08:30:00 +0900"
+    },
+    {
+      "title": "같은 기사 네이버 재송고 <b>소형모듈원전</b>",
+      "originallink": "https://example-press.co.kr/news/1001",
+      "link": "https://n.news.naver.com/mnews/article/002/0002",
+      "description": "duplicate originallink",
+      "pubDate": "Fri, 03 Jul 2026 08:45:00 +0900"
+    },
+    {
+      "title": "원전과 무관한 날씨 뉴스",
+      "originallink": "https://weather.example.kr/news/7",
+      "link": "https://n.news.naver.com/mnews/article/003/0003",
+      "description": "no theme match",
+      "pubDate": "Thu, 02 Jul 2026 21:00:00 +0900"
+    },
+    {
+      "title": "originallink 없는 기사 <b>데이터센터 전력</b> 수요 급증",
+      "originallink": "",
+      "link": "https://n.news.naver.com/mnews/article/004/0004",
+      "description": "empty originallink falls back to link",
+      "pubDate": "Fri, 03 Jul 2026 07:00:00 +0900"
+    },
+    {
+      "title": "pubDate 파싱 불가 기사",
+      "originallink": "https://example-press.co.kr/news/1005",
+      "link": "https://n.news.naver.com/mnews/article/005/0005",
+      "description": "bad date",
+      "pubDate": "not-a-date"
+    }
+  ]
+}

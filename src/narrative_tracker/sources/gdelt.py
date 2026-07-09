@@ -114,3 +114,22 @@ def load_cached_timeline(csv_path: str) -> pd.DataFrame:
         columns={"article_count": "count", "total_articles_norm": "norm"}
     )
     return frame.set_index("date").sort_index()
+
+
+def save_timeline_csv(frame, csv_path: str) -> None:
+    """Persist a fetched timeline to the on-disk cache format.
+
+    Inverse of ``load_cached_timeline``: writes columns
+    ``date,article_count,total_articles_norm`` with the date as YYYYMMDD, so
+    the resulting file drops straight into ``data/`` and is reproducible
+    offline. ``frame`` is the ``GdeltTimeline.frame`` (index=date, columns
+    count/norm).
+    """
+    out = frame.sort_index().reset_index()
+    out["date"] = out["date"].dt.strftime("%Y%m%d")
+    out = out.rename(
+        columns={"count": "article_count", "norm": "total_articles_norm"}
+    )
+    out[["date", "article_count", "total_articles_norm"]].to_csv(
+        csv_path, index=False
+    )

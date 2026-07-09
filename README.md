@@ -52,9 +52,10 @@ collect (GDELT / RSS)  ->  match (theme dictionaries)  ->  score (momentum)
 
 1. **Collect.** Primary source is the [GDELT DOC 2.0 API](https://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/):
    free, and supports historical range queries — the property that makes
-   retrospective demos possible at all. Google News RSS is implemented for
-   forward (daily) collection; Naver News API is designed but stubbed
-   (`src/narrative_tracker/sources/naver.py`) for the Korean-market v2.
+   retrospective demos possible at all. Google News RSS and the Naver News
+   API (v0.3, Korean market) are implemented for forward (daily)
+   collection; neither can backfill history, so their stores are kept
+   separate from GDELT series (not directly comparable).
 2. **Match.** Themes are explicit keyword dictionaries
    (`config/themes.yaml`), not learned topics — every count is auditable.
    GDELT is queried with a theme's query string; RSS headlines are matched
@@ -81,8 +82,20 @@ pip install -r requirements.txt
 python scripts/run_demo.py         # offline, reproducible from data/ snapshots
 python scripts/run_demo.py --fetch # refresh from the GDELT API (rate-limited)
 python scripts/collect_forward.py  # live: append today's counts (run on a schedule)
-pytest                             # 16 tests: parsing, matching, metrics, forward store
+python scripts/collect_forward.py --source naver  # needs Naver API credentials (see below)
+python scripts/build_dashboard.py  # multi-theme signal-light dashboard (offline)
+python scripts/fetch_gdelt_snapshot.py hbm_memory  # cache a theme's GDELT snapshot (needs network)
+pytest                             # 36 tests: parsing, matching, metrics, forward store, naver, gdelt, dashboard
 ```
+
+### Credentials (Naver, local)
+
+The Naver collector needs `NAVER_CLIENT_ID` / `NAVER_CLIENT_SECRET`
+(issue both at https://developers.naver.com/apps/, Search API). For local
+runs, copy `.env.example` to `.env` and fill in the two values — the code
+loads it automatically at import via python-dotenv. `.env` is gitignored;
+never commit real keys. In CI the same variables come from GitHub Secrets,
+so no `.env` is present and the loader is a harmless no-op.
 
 ## Repo layout
 
@@ -91,14 +104,16 @@ config/themes.yaml        theme dictionaries (edit here to track new narratives)
 src/narrative_tracker/
   sources/gdelt.py        GDELT DOC API client (retrospective, primary)
   sources/google_news.py  Google News RSS (forward collection)
-  sources/naver.py        Naver News API (v2 design stub)
+  sources/naver.py        Naver News API (v0.3, forward collection, Korean market)
   themes.py               dictionary loading + headline matching
   metrics.py              share, z-score, change rate, momentum
   pipeline.py             collect -> score
   forward.py              live collection store (dedupe + daily counts)
-  report.py               HTML report builder
+  report.py               HTML report + dashboard builder
 scripts/run_demo.py       the Oklo/SMR retrospective demo
-scripts/collect_forward.py  daily forward collector (Google News RSS)
+scripts/collect_forward.py  daily forward collector (--source google|naver)
+scripts/build_dashboard.py  multi-theme signal-light dashboard
+scripts/fetch_gdelt_snapshot.py  cache a theme's GDELT timeline into data/
 data/                     cached snapshots (see data/README.md for provenance)
 reports/                  generated chart + HTML report
 tests/                    pytest suite
@@ -141,10 +156,20 @@ This split is stated because it is true, and because the design decisions
 - **v0.2 (done):** forward daily collection via Google News RSS
   (`scripts/collect_forward.py`, deduped local store) + CI (pytest on
   Python 3.10/3.12, plus a full offline demo run).
-- **v0.3:** Naver News API collector (Korean market), scheduled runs, and a
-  multi-theme signal-light dashboard (pattern shared with my
-  macro-risk-monitor project). Note: RSS/API stores cannot backfill and are
+- **v0.3 (done):** Naver News API collector (Korean market, env-var
+  credentials, originallink dedupe, fixture-based tests), scheduled daily
+  collection via GitHub Actions cron (auto-commits `data/forward/`), and a
+  multi-theme signal-light dashboard (`reports/dashboard.html`, pattern
+  shared with my macro-risk-monitor project). Two new themes added
+  (HBM/AI memory, K-defense exports) — GDELT snapshots for them not yet
+  cached, shown as NO DATA. Note: RSS/API stores cannot backfill and are
   not directly comparable to GDELT shares without normalization.
+- **v0.4 (done):** hardening — headline matching moved to a left word
+  boundary (fixes `(SMR)`/punctuation blind spots while preserving CJK
+  adjacency and acronym-prefix intent); Naver collector gains retry/
+  backoff, 429/5xx handling and optional pagination (up to 1000/query);
+  local `.env` support (python-dotenv); `fetch_gdelt_snapshot.py` to
+  cache GDELT snapshots for the HBM and K-defense themes.
 - **Later:** sentiment/embedding enrichment, only if frequency alone proves
   insufficient.
 
@@ -165,6 +190,13 @@ OKLO 실거래에서 내러티브 전환을 정성적 감으로만 추적하다 
 ($174.14), 장중 최고가 $193.84는 2025-10-15 (Yahoo Finance 기준,
 2026-07-02 조회). 두 피크 간 간격 139일. 이는 단일 사례의 기술적
 서술이며, "예측했다"는 주장이 아닙니다.
+
+v0.3에서는 네이버 뉴스 API 정방향 수집기(환경변수 키, originallink
+우선 중복 제거, fixture 기반 테스트), GitHub Actions cron 일일 자동
+수집(data/forward/ 자동 커밋), 테마별 신호등 대시보드
+(reports/dashboard.html — ELEVATED/NEUTRAL/FADING은 표현 버킷이지 매매
+신호가 아님)를 추가했습니다. RSS/네이버 정방향 저장소는 과거 백필이
+불가능해 GDELT 비중 시계열과 직접 비교하지 않습니다.
 
 역할 분담: 문제 정의·테마 사전 설계·지표 정의·결과 해석은 본인,
 코드 구현·테스트는 AI 코딩 어시스턴트(Claude)와의 협업입니다.

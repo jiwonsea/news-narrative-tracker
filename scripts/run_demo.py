@@ -47,7 +47,9 @@ INTRADAY_HIGH_DATE = "2025-10-15"
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--fetch", action="store_true", help="hit the GDELT API instead of the cache")
+    parser.add_argument(
+        "--fetch", action="store_true", help="hit the GDELT API instead of the cache"
+    )
     args = parser.parse_args()
 
     themes = load_themes(str(ROOT / "config" / "themes.yaml"))
