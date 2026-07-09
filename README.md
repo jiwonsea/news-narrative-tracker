@@ -97,6 +97,27 @@ loads it automatically at import via python-dotenv. `.env` is gitignored;
 never commit real keys. In CI the same variables come from GitHub Secrets,
 so no `.env` is present and the loader is a harmless no-op.
 
+## Theme selection (inclusion rule)
+
+Which narratives get a dictionary is a stated policy, not an ad-hoc choice. A
+theme is admitted only if it satisfies all three tests, applied the same way by
+anyone (author-independent, the same auditability principle as using keyword
+dictionaries over learned topics):
+
+1. **Auditable** — expressible as an explicit keyword dictionary (EN + KR), so
+   every match is explainable. Themes that need sentiment/embeddings to even be
+   *defined* are out of scope at the frequency-first stage.
+2. **Tradeable proxy** — maps to at least one liquid instrument or a small
+   named basket, recorded in each theme's `proxy:` field, so timing can be
+   overlaid on a price series.
+3. **Active** — a currently-live market narrative (non-trivial trailing-90-day
+   GDELT frequency), not a dormant or purely structural theme.
+
+The rule governs **scope, not conviction**: inclusion says a theme is
+measurable, overlayable, and live — not that it will work as a trade. The four
+current themes and how each satisfies the rule (with proxies and one-line
+rationales) are defined in `config/themes.yaml`.
+
 ## Repo layout
 
 ```

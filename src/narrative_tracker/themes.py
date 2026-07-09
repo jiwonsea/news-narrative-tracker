@@ -23,6 +23,12 @@ class Theme:
     label: str
     gdelt_query: str
     keywords: List[str] = field(default_factory=list)
+    # Optional metadata backing the theme-selection inclusion rule
+    # (see config/themes.yaml header). ``proxy`` names the liquid instrument
+    # or basket the theme is studied against; ``rationale`` is a one-line note
+    # on why the theme is in scope. Neither affects matching or scoring.
+    proxy: str = ""
+    rationale: str = ""
 
 
 def load_themes(path: str) -> Dict[str, Theme]:
@@ -35,6 +41,8 @@ def load_themes(path: str) -> Dict[str, Theme]:
             label=spec["label"],
             gdelt_query=spec["gdelt_query"],
             keywords=[k.lower() for k in spec.get("keywords", [])],
+            proxy=spec.get("proxy", ""),
+            rationale=spec.get("rationale", ""),
         )
     return themes
 

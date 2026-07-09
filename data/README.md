@@ -45,3 +45,33 @@ plaintext "limit requests to one every 5 seconds" notice when throttled; the
 client's retry logic handles this. After any refresh, update the retrieval date
 here and re-run `python scripts/build_dashboard.py`; the cards fill in
 automatically.
+
+## Data-gap verification (2025-06-15 ~ 07-01) — confirmed GDELT-side
+
+Decision (author): *"if it is genuinely a gap, keep the shading; but first
+confirm why it is a gap, and backfill if the data is collectable."*
+
+Verified **2026-07-09** by cross-checking all four GDELT snapshots. Every theme
+is missing the **identical** 17-day window, and the boundary days carry the
+**same `total_articles_norm`** (a query-independent, platform-wide figure):
+
+| date | smr | datacenter | hbm | kdefense | norm (all identical) |
+|---|---|---|---|---|---|
+| 2025-06-14 | 6 | 4 | 2 | 0 | 107,034 |
+| 2025-06-15 … 07-01 | — | — | — | — | (no rows) |
+| 2025-07-02 | 11 | 6 | 5 | 3 | 155,637 |
+
+Four independent queries cannot all lose the same window unless GDELT itself
+emitted no `timelinevol` data for those dates. This is therefore a genuine
+**GDELT-side outage**, not a per-query collection miss — so the shaded gap
+stays and is **not** interpolated (project policy: disclose, don't smooth).
+
+Backfill status: not collectable from this sandbox (no route to
+`api.gdeltproject.org`). GDELT occasionally backfills outages later, so from a
+networked machine it is worth re-checking once:
+
+```bash
+python scripts/fetch_gdelt_snapshot.py smr_nuclear --start 20250610 --end 20250705 --out /tmp/gap_probe.csv
+# if rows for 2025-06-15..07-01 now exist, re-pull the full snapshots and
+# the chart gap will close on its own (the shading is data-driven).
+```

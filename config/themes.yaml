@@ -7,15 +7,53 @@
 #                 for multi-word terms; single words unquoted)
 #   keywords:     lowercase substrings used for local headline matching
 #                 (Google News RSS now, Naver News API later)
+#   proxy:        the liquid instrument or basket the theme is studied
+#                 against (inclusion-rule criterion 2, below)
+#   rationale:    one-line note on why the theme is in scope
 #
-# Design decision (by the author): themes are defined as explicit keyword
-# dictionaries rather than learned topics, so that every count is auditable
-# -- you can always answer "why did this article match".
+# ---------------------------------------------------------------------------
+# Theme-selection policy (author's decision) — OBJECTIVE INCLUSION RULE
+# ---------------------------------------------------------------------------
+# A theme is admitted to this repo only if it satisfies ALL THREE tests.
+# The rule is deliberately author-independent: anyone can apply it and get
+# the same yes/no, which is the same auditability principle behind using
+# keyword dictionaries instead of learned topics.
+#
+#   1. AUDITABLE       The theme can be expressed as an explicit keyword
+#                      dictionary (English + Korean) so that every article
+#                      match is explainable ("why did this count?"). No theme
+#                      that requires sentiment/embeddings to define is admitted
+#                      at this stage (frequency-first; NLP is a v2 question).
+#
+#   2. TRADEABLE PROXY The theme maps to at least one liquid instrument or a
+#                      small, nameable basket, so narrative timing can be
+#                      overlaid on a price series. The proxy is recorded in
+#                      the `proxy:` field and must be a real, quotable ticker.
+#
+#   3. ACTIVE          The theme is a currently-live market narrative (the
+#                      market is actively "talking about" it), not a dormant
+#                      or purely structural theme. Operationalized as: a
+#                      non-trivial GDELT frequency in the trailing ~90 days.
+#
+# Notes:
+# - The rule governs SCOPE, not conviction. Being in this file is not a view
+#   that the theme will work; it is a statement that the theme is measurable,
+#   overlayable, and live.
+# - When a theme stops satisfying (3) for an extended period, it is retired to
+#   an archive rather than deleted, so its history stays reproducible.
+# - Design decision (by the author): themes are defined as explicit keyword
+#   dictionaries rather than learned topics, so that every count is auditable
+#   -- you can always answer "why did this article match".
 
 themes:
   smr_nuclear:
     label: "SMR / advanced nuclear (Oklo)"
     gdelt_query: '(Oklo OR "small modular reactor") sourcelang:eng'
+    proxy: "OKLO (NYSE)"
+    rationale: >-
+      Origin episode of the whole project (a real OKLO trade). Auditable
+      keywords, a single liquid US name, and an active 2025-26 AI-power-driven
+      nuclear narrative -- satisfies all three inclusion tests.
     keywords:
       - oklo
       - small modular reactor
@@ -28,6 +66,11 @@ themes:
   ai_datacenter_power:
     label: "AI data center power demand x nuclear"
     gdelt_query: '"data center" (nuclear OR reactor) sourcelang:eng'
+    proxy: "US IPP / nuclear-for-datacenter basket (VST, CEG, OKLO)"
+    rationale: >-
+      The demand-side driver behind the SMR thesis; included partly to show the
+      method separates related narratives (it peaks at a different time than
+      smr_nuclear). Proxy is a small basket rather than one name.
     keywords:
       - data center power
       - datacenter power
@@ -39,6 +82,10 @@ themes:
   hbm_memory:
     label: "HBM / AI memory (semiconductor)"
     gdelt_query: '("high bandwidth memory" OR HBM3 OR HBM4) sourcelang:eng'
+    proxy: "SK Hynix (000660.KS), Samsung (005930.KS); also Micron (MU)"
+    rationale: >-
+      KRX-centric AI-memory supercycle narrative. Auditable keywords, deeply
+      liquid Korean/US proxies, active coverage -- satisfies all three tests.
     keywords:
       - high bandwidth memory
       - " hbm"
@@ -51,6 +98,10 @@ themes:
   defense_exports:
     label: "Korean defense exports (K-defense)"
     gdelt_query: '("defense export" OR "arms export") ("South Korea" OR Korean) sourcelang:eng'
+    proxy: "Hanwha Aerospace (012450.KS), KAI (047810.KS)"
+    rationale: >-
+      KRX K-defense re-rating narrative. Auditable keywords, liquid Korean
+      proxies, active export-driven coverage -- satisfies all three tests.
     keywords:
       - k-defense
       - korean defense export
