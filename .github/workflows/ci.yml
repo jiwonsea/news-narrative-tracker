@@ -25,4 +25,5 @@ jobs:
         run: pytest -q
       - name: Run demo (offline, from cached snapshots)
         run: python scripts/run_demo.py
-      - name: Build dashboard (offline, from cached snapsh
+      - name: Build dashboard (offline, from cached snapshots)
+        run: python scripts/build_dashboard.py

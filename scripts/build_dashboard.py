@@ -89,3 +89,6 @@ def main() -> None:
         print(f"{c.key}: {c.status} momentum={c.momentum} as_of={c.as_of}")
     print(f"wrote {OUT_HTML}")
 
+
+if __name__ == "__main__":
+    main()
